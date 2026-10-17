@@ -1,0 +1,33 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: portfolio-api-strip-prefix
+  namespace: portfolio
+spec:
+  stripPrefix:
+    prefixes:
+      - /api
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: portfolio
+  namespace: portfolio
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`portfolio.local`) && PathPrefix(`/api`)
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: portfolio-api-strip-prefix
+      services:
+        - name: portfolio-backend
+          port: 10000
+    - match: Host(`portfolio.local`) && PathPrefix(`/`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: portfolio-frontend
+          port: 80
