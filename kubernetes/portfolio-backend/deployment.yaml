@@ -19,3 +19,6 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 10000
+          envFrom:
+            - secretRef:
+                name: portfolio-backend-db

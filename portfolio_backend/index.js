@@ -18,13 +18,14 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.SERVER_PORT || 10000
 // const DB_URL = process.env.NODE_ENV == 'development' ? process.env.DB_URL : process.env.MONGODB_DEV
+const DB_URL = "portfolio-mongodb:27017"
 
 // connect to DATABASE
-// mongoose.connect(DB_URL).then((info)=>{
-//     console.log(`Connected to Database`)
-// }).catch((err)=>{
-//     console.log(err)
-// })
+mongoose.connect(DB_URL).then((info)=>{
+    console.log(`Connected to Database`)
+}).catch((err)=>{
+    console.log(err)
+})
 
 
 const array = [
