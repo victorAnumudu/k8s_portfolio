@@ -7,4 +7,5 @@ resources:
   - portfolio-backend/service.yaml
   - portfolio-frontend/deployment.yaml
   - portfolio-frontend/service.yaml
+  - portfolio-mongodb
   - portfolio-ingress.yaml
