@@ -18,7 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.SERVER_PORT || 10000
 // const DB_URL = process.env.NODE_ENV == 'development' ? process.env.DB_URL : process.env.MONGODB_DEV
-const DB_URL = "portfolio-mongodb:27017"
+const DB_URL = process.env.MONGODB_URI;
+
+if (!DB_URL) {
+    throw new Error('MONGODB_URI environment variable is missing');
+}
 
 // connect to DATABASE
 mongoose.connect(DB_URL).then((info)=>{
