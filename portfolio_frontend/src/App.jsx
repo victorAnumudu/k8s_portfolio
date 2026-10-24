@@ -1,9 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
 
 export default function App() {
+  const [contactName, setContactName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [formMessage, setFormMessage] = useState('')
+
+  const handleContactSubmit = (event) => {
+    event.preventDefault()
+    setFormMessage(`Thanks, ${contactName}! Your details have been entered.`)
+    setContactName('')
+    setContactEmail('')
+  }
 
   useEffect(() => {
     axios.get('/api/')
@@ -19,21 +29,21 @@ export default function App() {
   return (
     <>
       <div className="cursor-glow" aria-hidden="true" />
-      <header class="site-header" id="top">
-        <a class="logo" href="#top" aria-label="Homepage">AM<span>.</span></a>
-        <nav class="desktop-nav" aria-label="Main navigation">
+      <header className="site-header" id="top">
+        <a className="logo" href="#top" aria-label="Homepage">AM<span>.</span></a>
+        <nav className="desktop-nav" aria-label="Main navigation">
           <a href="#about">About</a>
           <a href="#work">Work</a>
           <a href="#skills">Skills</a>
           <a href="#contact">Contact</a>
         </nav>
-        <a class="header-cta" href="#contact">Let's talk <span>↗</span></a>
-        <button class="menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <a className="header-cta" href="#contact">Let's talk <span>↗</span></a>
+        <button className="menu-toggle" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span>
         </button>
       </header>
 
-      <div class="mobile-menu" aria-hidden="true">
+      <div className="mobile-menu" aria-hidden="true">
         <a href="#about">About</a>
         <a href="#work">Work</a>
         <a href="#skills">Skills</a>
@@ -387,6 +397,49 @@ export default function App() {
             <a className="contact-email" href="mailto:hello@alexmorgan.dev">
               hello@alexmorgan.dev <span>↗</span>
             </a>
+          </div>
+
+          <div className="contact-form-section">
+            <div className="contact-form-copy">
+              <p className="section-label">Let's connect</p>
+              <h3>Stay in the loop.</h3>
+              <p>Leave your name and email, and let's start a conversation.</p>
+            </div>
+
+            <form className="contact-form" onSubmit={handleContactSubmit}>
+              <div className="form-field">
+                <label htmlFor="contact-name">Name</label>
+                <input
+                  id="contact-name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Your name"
+                  value={contactName}
+                  onChange={(event) => setContactName(event.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="contact-email">Email</label>
+                <input
+                  id="contact-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={contactEmail}
+                  onChange={(event) => setContactEmail(event.target.value)}
+                  required
+                />
+              </div>
+
+              <button className="contact-submit" type="submit">
+                Send <span aria-hidden="true">↗</span>
+              </button>
+              {formMessage && <p className="form-message" role="status">{formMessage}</p>}
+            </form>
           </div>
 
           <div className="contact-bottom">
