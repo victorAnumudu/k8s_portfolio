@@ -31,6 +31,13 @@ mongoose.connect(DB_URL).then((info)=>{
     console.log(err)
 })
 
+const userSchema = new mongoose.Schema({
+    name: String,
+    age: Number
+});
+
+const User = mongoose.model('User', userSchema);
+
 
 const array = [
     {name: 'John', age: 30},
@@ -42,6 +49,25 @@ app.get('/', (req, res)=>{
     res.status(200).json({status: 1, message:'Sucessful', data: array })
 })
 
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find();
+
+        res.status(200).json({
+            status: 1,
+            message: 'Users retrieved successfully',
+            data: users
+        });
+    } catch (err) {
+        console.error(err);
+
+        res.status(500).json({
+            status: 0,
+            message: 'Failed to retrieve users'
+        });
+    }
+});
+
 
 const webSocketServer = app.listen(PORT, '0.0.0.0', (err) => {
     if (err) {
@@ -49,6 +75,29 @@ const webSocketServer = app.listen(PORT, '0.0.0.0', (err) => {
         return;
     }
     console.log('SERVER CONNECTED');
+});
+
+
+app.get('/adduser', async (req, res) => {
+    try {
+        const user = await User.create({
+            name: 'Johnny',
+            age: 30
+        });
+
+        res.status(201).json({
+            status: 1,
+            message: 'User created successfully',
+            data: user
+        });
+    } catch (err) {
+        console.error(err);
+
+        res.status(500).json({
+            status: 0,
+            message: 'Failed to create user'
+        });
+    }
 });
 
 
