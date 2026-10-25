@@ -4,7 +4,7 @@ metadata:
   name: portfolio-backend
   namespace: portfolio
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: portfolio-backend
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: portfolio-backend
-          image: portfolic-backend:v1
+          image: portfolio-backend:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 10000
