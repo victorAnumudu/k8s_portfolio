@@ -33,7 +33,7 @@ mongoose.connect(DB_URL).then((info)=>{
 
 const userSchema = new mongoose.Schema({
     name: String,
-    age: Number
+    email: String
 });
 
 const User = mongoose.model('User', userSchema);
@@ -50,6 +50,7 @@ app.get('/', (req, res)=>{
 })
 
 app.get('/users', async (req, res) => {
+    console.log('GET /users called');
     try {
         const users = await User.find();
 
@@ -79,10 +80,11 @@ const webSocketServer = app.listen(PORT, '0.0.0.0', (err) => {
 
 
 app.get('/adduser', async (req, res) => {
+    console.log(req.query.name, req.query.email);
     try {
         const user = await User.create({
-            name: 'Johnny',
-            age: 30
+            name: req.query.name || 'Default Name',
+            email: req.query.email || 'Default Email',
         });
 
         res.status(201).json({

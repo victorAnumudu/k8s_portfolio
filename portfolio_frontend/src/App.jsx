@@ -10,13 +10,25 @@ export default function App() {
 
   const handleContactSubmit = (event) => {
     event.preventDefault()
-    setFormMessage(`Thanks, ${contactName}! Your details have been entered.`)
-    setContactName('')
-    setContactEmail('')
+    axios.get('/api/adduser',{name: contactName, email: contactEmail})
+    .then((response) => {
+      console.log(response.data)
+      setFormMessage(`Thanks, ${contactName}! Your details have been entered.`)
+      setContactName('')
+      setContactEmail('')
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error)
+      setFormMessage(`Opps, something went wrong.`)
+    }).finally(() => {
+      setTimeout(() => {
+        setFormMessage('')
+      }, 5000)
+    })
   }
 
   useEffect(() => {
-    axios.get('/api/')
+    axios.get('/api/users')
       .then((response) => {
         console.log(response.data)
       })
