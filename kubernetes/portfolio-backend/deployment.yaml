@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: portfolio-backend
-          image: portfolic-backend:v2
+          image: portfolic-backend:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 10000
