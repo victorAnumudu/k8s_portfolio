@@ -83,16 +83,6 @@ spec:
       - /api
 ---
 apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: portfolio-backoffice-strip-prefix
-  namespace: portfolio
-spec:
-  stripPrefix:
-    prefixes:
-      - /backoffice
----
-apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: portfolio
@@ -102,7 +92,7 @@ spec:
     - web
   routes:
     # Backend API
-    - match: Host(`portfolio.local`) && PathPrefix(`/api`)
+    - match: Host(`portfolio.local`, `backoffice.portfolio.local`) && PathPrefix(`/api`)
       kind: Rule
       priority: 100
       middlewares:
@@ -112,11 +102,11 @@ spec:
           port: 10000
 
     # Back-office frontend
-    - match: Host(`portfolio.local`) && (Path(`/backoffice`) || PathPrefix(`/backoffice/`))
+    - match: Host(`backoffice.portfolio.local`) && PathPrefix(`/`)
       kind: Rule
       priority: 50
-      middlewares:
-        - name: portfolio-backoffice-strip-prefix
+      # middlewares:
+      #   - name: portfolio-backoffice-strip-prefix
       services:
         - name: portfolio-frontend-backoffice
           port: 80
@@ -124,7 +114,7 @@ spec:
     # Main frontend
     - match: Host(`portfolio.local`) && PathPrefix(`/`)
       kind: Rule
-      priority: 1
+      priority: 50
       services:
         - name: portfolio-frontend
           port: 80
