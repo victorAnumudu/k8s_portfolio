@@ -43,7 +43,7 @@ spec:
     - web
   routes:
     # 1. API Route
-    - match: Host(`portfolio.local`) && PathPrefix(`/api`)
+    - match: (Host(`portfolio.local`) || Host(`backoffice.portfolio.local`)) && PathPrefix(`/api`)
       kind: Rule
       priority: 100
       middlewares:
