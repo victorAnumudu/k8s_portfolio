@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio-frontend-backoffice
+  namespace: portfolio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portfolio-frontend-backoffice
+  template:
+    metadata:
+      labels:
+        app: portfolio-frontend-backoffice
+    spec:
+      containers:
+        - name: portfolio-frontend-backoffice
+          image: portfolio-frontend-backoffice:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

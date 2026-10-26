@@ -10,8 +10,12 @@ export default function App() {
 
   const handleContactSubmit = (event) => {
     event.preventDefault()
-    axios.get('/api/adduser',{name: contactName, email: contactEmail})
-    .then((response) => {
+    axios.get('/api/adduser', {
+      params: {
+        name: contactName,
+        email: contactEmail
+      }
+    }).then((response) => {
       console.log(response.data)
       setFormMessage(`Thanks, ${contactName}! Your details have been entered.`)
       setContactName('')
