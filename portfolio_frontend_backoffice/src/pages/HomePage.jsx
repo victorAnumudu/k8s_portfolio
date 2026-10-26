@@ -1,6 +1,12 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function HomePage() {
+  const navigate = useNavigate()
+
+  const logout = () => {
+    navigate('/login')
+  }
   return (
   <div class="admin-page">
     <aside class="sidebar">
@@ -13,7 +19,7 @@ export default function HomePage() {
       <div class="sidebar-bottom">
         <div class="profile-mark">AM</div>
         <div class="profile-copy"><strong>Alex Morgan</strong><span>Administrator</span></div>
-        <button class="icon-button logout-button" id="logout-button" aria-label="Sign out" title="Sign out">↗</button>
+        <button onClick={()=>logout()} class="icon-button logout-button" id="logout-button" aria-label="Sign out" title="Sign out">↗</button>
       </div>
     </aside>
 
