@@ -24,7 +24,7 @@ export default function HomePage() {
         console.log('Data fetched successfully:', response.data)
         setContacts({
           loading: false,
-          data: response.data,
+          data: response?.data?.data,
           error: null
         })
       })
