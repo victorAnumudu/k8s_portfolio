@@ -33,64 +33,7 @@
 #           port: 80
 
 
-# apiVersion: traefik.io/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: portfolio
-#   namespace: portfolio
-# spec:
-#   entryPoints:
-#     - web
-#   routes:
-#     # 1. API Route
-#     - match: Host(`portfolio.local`, `backoffice.portfolio.local`) && PathPrefix(`/api`)
-#       kind: Rule
-#       priority: 100
-#       middlewares:
-#         - name: portfolio-api-strip-prefix
-#       services:
-#         - name: portfolio-backend
-#           port: 10000
 
-#     # 2. Main Frontend Route
-#     - match: Host(`portfolio.local`) && PathPrefix(`/`)
-#       kind: Rule
-#       priority: 1
-#       services:
-#         - name: portfolio-frontend
-#           port: 80
-
-#     # 3. Backoffice Frontend Route (Dedicated Subdomain)
-#     - match: Host(`backoffice.portfolio.local`) && PathPrefix(`/`)
-#       kind: Rule
-#       priority: 1
-#       services:
-#         - name: portfolio-frontend-backoffice
-#           port: 80 # Update if your container uses a different port
-
-
-
-
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: portfolio-api-strip-prefix
-  namespace: portfolio
-spec:
-  stripPrefix:
-    prefixes:
-      - /api
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: portfolio-backoffice-strip-prefix
-  namespace: portfolio
-spec:
-  stripPrefix:
-    prefixes:
-      - /backoffice
----
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -100,8 +43,8 @@ spec:
   entryPoints:
     - web
   routes:
-    # Backend API
-    - match: Host(`portfolio.local`) && PathPrefix(`/api`)
+    # 1. API Route
+    - match: Host(`portfolio.local`, `backoffice.portfolio.local`) && PathPrefix(`/api`)
       kind: Rule
       priority: 100
       middlewares:
@@ -110,20 +53,78 @@ spec:
         - name: portfolio-backend
           port: 10000
 
-    # Back-office frontend
-    - match: Host(`portfolio.local`) && (Path(`/backoffice`) || PathPrefix(`/backoffice/`))
-      kind: Rule
-      priority: 50
-      middlewares:
-        - name: portfolio-backoffice-strip-prefix
-      services:
-        - name: portfolio-frontend-backoffice
-          port: 80
-
-    # Main frontend
+    # 2. Main Frontend Route
     - match: Host(`portfolio.local`) && PathPrefix(`/`)
       kind: Rule
       priority: 1
       services:
         - name: portfolio-frontend
           port: 80
+
+    # 3. Backoffice Frontend Route (Dedicated Subdomain)
+    - match: Host(`backoffice.portfolio.local`) && PathPrefix(`/`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: portfolio-frontend-backoffice
+          port: 80 # Update if your container uses a different port
+
+
+
+
+# apiVersion: traefik.io/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: portfolio-api-strip-prefix
+#   namespace: portfolio
+# spec:
+#   stripPrefix:
+#     prefixes:
+#       - /api
+# ---
+# apiVersion: traefik.io/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: portfolio-backoffice-strip-prefix
+#   namespace: portfolio
+# spec:
+#   stripPrefix:
+#     prefixes:
+#       - /backoffice
+# ---
+# apiVersion: traefik.io/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: portfolio
+#   namespace: portfolio
+# spec:
+#   entryPoints:
+#     - web
+#   routes:
+#     # Backend API
+#     - match: Host(`portfolio.local`) && PathPrefix(`/api`)
+#       kind: Rule
+#       priority: 100
+#       middlewares:
+#         - name: portfolio-api-strip-prefix
+#       services:
+#         - name: portfolio-backend
+#           port: 10000
+
+#     # Back-office frontend
+#     - match: Host(`portfolio.local`) && (Path(`/backoffice`) || PathPrefix(`/backoffice/`))
+#       kind: Rule
+#       priority: 50
+#       middlewares:
+#         - name: portfolio-backoffice-strip-prefix
+#       services:
+#         - name: portfolio-frontend-backoffice
+#           port: 80
+
+#     # Main frontend
+#     - match: Host(`portfolio.local`) && PathPrefix(`/`)
+#       kind: Rule
+#       priority: 1
+#       services:
+#         - name: portfolio-frontend
+#           port: 80
