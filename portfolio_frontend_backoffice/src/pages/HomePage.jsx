@@ -112,10 +112,10 @@ export default function HomePage() {
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th class="number-col">#</th><th>CONTACT</th><th>EMAIL ADDRESS</th><th>STATUS</th></tr></thead>
+            <thead><tr><th>NAME</th><th>EMAIL ADDRESS</th></tr></thead>
             <tbody id="contacts-body">
               {contacts?.loading && (
-                <tr><td colspan="4" class="empty-state"><span class="loading-dot"></span> Loading contacts…</td></tr>
+                <tr><td colspan="2" class="empty-state"><span class="loading-dot"></span> Loading contacts…</td></tr>
               )}
               {contacts?.data.map((contact) => (
                 <tr key={contact.id}>
