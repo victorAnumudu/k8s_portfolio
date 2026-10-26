@@ -1,12 +1,50 @@
 import React from 'react'
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 export default function HomePage() {
   const navigate = useNavigate()
 
+  const [contacts, setContacts] = React.useState({
+    loading: true,
+    data: [],
+    error: null
+  })
+
+  const refreshContactList = () => {
+    setContacts({
+      loading: true,
+      data: [],
+      error: null
+    })
+
+    axios.get('/api/users')
+      .then((response) => {
+        console.log('Data fetched successfully:', response.data)
+        setContacts({
+          loading: false,
+          data: response.data,
+          error: null
+        })
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error)
+        setContacts({
+          loading: false,
+          data: [],
+          error: error
+        })
+      })
+  }
+
   const logout = () => {
     navigate('/login')
   }
+
+  useEffect(() => {
+    refreshContactList()
+  }, [])
+
   return (
   <div class="admin-page">
     <aside class="sidebar">
@@ -63,7 +101,7 @@ export default function HomePage() {
             <h2>Contact submissions</h2>
             <p class="table-subtitle">Names and email addresses submitted through your website.</p>
           </div>
-          <button class="button button-dark" id="refresh-button"><span class="refresh-icon">↻</span> Refresh list</button>
+          <button onClick={()=>refreshContactList()} class="button button-dark" id="refresh-button"><span class="refresh-icon">↻</span> Refresh list</button>
         </div>
 
         <div class="table-tools">
@@ -75,12 +113,20 @@ export default function HomePage() {
           <table>
             <thead><tr><th class="number-col">#</th><th>CONTACT</th><th>EMAIL ADDRESS</th><th>STATUS</th></tr></thead>
             <tbody id="contacts-body">
-              <tr><td colspan="4" class="empty-state"><span class="loading-dot"></span> Loading contacts…</td></tr>
+              {contacts?.loading && (
+                <tr><td colspan="4" class="empty-state"><span class="loading-dot"></span> Loading contacts…</td></tr>
+              )}
+              {contacts?.data.map((contact) => (
+                <tr key={contact.id}>
+                  <td>{contact.name}</td>
+                  <td>{contact.email}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-        <div class="table-footer"><span id="footer-count">Waiting for data</span><span>PORTFOLIO / CONTACTS</span></div>
-        <p class="api-note" id="api-note" role="status">Connecting to <code>/api/users</code>…</p>
+        {/* <div class="table-footer"><span id="footer-count">Waiting for data</span><span>PORTFOLIO / CONTACTS</span></div>
+        <p class="api-note" id="api-note" role="status">Connecting to <code>/api/users</code>…</p> */}
       </section>
       <footer class="admin-footer"><span>© <span id="year"></span> Alex Morgan</span><span>MADE WITH INTENTION <b>✦</b></span></footer>
     </main>
