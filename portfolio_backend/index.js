@@ -3,6 +3,16 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const cors = require("cors");
 
+const multer = require('multer');
+const { randomUUID } = require('crypto');
+const path = require('path');
+const {
+  s3,
+  bucket,
+  PutObjectCommand,
+  GetObjectCommand,
+} = require('./rustfs');
+
 const app = express()
 
 
@@ -13,6 +23,17 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
 // ROUTES
+
+
+
+// MULTER CONFIGURATION FOR FILE UPLOADS
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Maximum 5 MB per file
+    files: 1,
+  },
+});
 
 
 
@@ -67,6 +88,102 @@ app.get('/users', async (req, res) => {
             message: 'Failed to retrieve users'
         });
     }
+});
+
+// Upload a file to RustFS
+app.post('/files', (req, res, next) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+          status: 0,
+          message: 'File must not exceed 5 MB',
+        });
+      }
+
+      return res.status(400).json({
+        status: 0,
+        message: 'Invalid file upload',
+      });
+    }
+
+    next();
+  });
+}, async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      status: 0,
+      message: 'Please select a file',
+    });
+  }
+
+  try {
+    const extension = path.extname(req.file.originalname)
+      .replace(/[^a-zA-Z0-9.]/g, '')
+      .slice(0, 15);
+
+    const key = `${randomUUID()}${extension}`;
+
+    await s3.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }));
+
+    res.status(201).json({
+      status: 1,
+      message: 'File uploaded successfully',
+      data: {
+        key,
+        downloadPath: `/api/files/${key}`,
+      },
+    });
+  } catch (err) {
+    console.error('RustFS upload failed:', err.name, err.message);
+
+    res.status(500).json({
+      status: 0,
+      message: 'Failed to upload file',
+    });
+  }
+});
+
+
+// Retrieve a file from RustFS
+app.get('/files/:key', async (req, res) => {
+  try {
+    const result = await s3.send(new GetObjectCommand({
+      Bucket: bucket,
+      Key: req.params.key,
+    }));
+
+    res.setHeader(
+      'Content-Type',
+      result.ContentType || 'application/octet-stream'
+    );
+
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${path.basename(req.params.key)}"`
+    );
+
+    result.Body.pipe(res);
+  } catch (err) {
+    if (err.name === 'NoSuchKey' || err.name === 'NotFound') {
+      return res.status(404).json({
+        status: 0,
+        message: 'File not found',
+      });
+    }
+
+    console.error('RustFS retrieval failed:', err.name, err.message);
+
+    res.status(500).json({
+      status: 0,
+      message: 'Failed to retrieve file',
+    });
+  }
 });
 
 

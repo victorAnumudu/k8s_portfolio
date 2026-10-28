@@ -22,3 +22,18 @@ spec:
           envFrom:
             - secretRef:
                 name: portfolio-backend-db
+          env:
+            - name: RUSTFS_ENDPOINT
+              value: "http://rustfs:9000"
+            - name: RUSTFS_BUCKET
+              value: "portfolio-files"
+            - name: RUSTFS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: RUSTFS_ACCESS_KEY
+            - name: RUSTFS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: RUSTFS_SECRET_KEY
