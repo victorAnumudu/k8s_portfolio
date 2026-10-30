@@ -8,6 +8,44 @@ export default function App() {
   const [contactEmail, setContactEmail] = useState('')
   const [formMessage, setFormMessage] = useState('')
 
+  const [file, setFile] = useState(null);
+
+  // Handles selecting the file from the computer
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+    // Handles sending the file to your api/files route
+  const handleUpload = async (event) => {
+    event.preventDefault();
+    if (!file) {
+      alert("Please select an image first!");
+      return;
+    }
+
+    // FormData is required to send files via multipart/form-data
+    const formData = new FormData();
+    formData.append('file', file); // 'file' matches the key your backend expects
+
+    try {
+      const response = await axios.post('/api/files', formData, {
+        headers: {
+          // Note: Axios automatically sets 'multipart/form-data' and the boundary 
+          // when it detects a FormData object as the request body.
+        }
+      });
+
+      console.log('Upload successful:', response.data);
+      alert('Image uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading file:', error.response?.data || error.message);
+      alert('Upload failed.');
+    }
+  };
+
   const handleContactSubmit = (event) => {
     event.preventDefault()
     axios.get('/api/adduser', {
@@ -453,6 +491,24 @@ export default function App() {
 
               <button className="contact-submit" type="submit">
                 Send <span aria-hidden="true">↗</span>
+              </button>
+              {formMessage && <p className="form-message" role="status">{formMessage}</p>}
+            </form>
+
+            <form className="contact-form" onSubmit={handleUpload}>
+              <div className="form-field">
+                <label htmlFor="contact-name">Image</label>
+                <input
+                  id="image-upload"
+                  name="image"
+                  type="file"
+                  accept="image/*" // Restricts file picker to images only
+                  onChange={handleFileChange}
+                  required
+                />
+              </div>
+              <button className="contact-submit" type="submit">
+                Upload <span aria-hidden="true">↗</span>
               </button>
               {formMessage && <p className="form-message" role="status">{formMessage}</p>}
             </form>

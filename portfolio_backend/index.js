@@ -110,6 +110,7 @@ app.post('/files', (req, res, next) => {
     next();
   });
 }, async (req, res) => {
+  console.log('POST /files called', req.file); // REMOVE LATER
   if (!req.file) {
     return res.status(400).json({
       status: 0,
@@ -126,7 +127,7 @@ app.post('/files', (req, res, next) => {
 
     await s3.send(new PutObjectCommand({
       Bucket: bucket,
-      Key: key,
+      Key: "profile/"+key,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
     }));
