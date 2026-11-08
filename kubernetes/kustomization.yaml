@@ -9,6 +9,6 @@ resources:
   - portfolio-frontend/service.yaml
   - portfolio-frontend-backoffice/deployment.yaml
   - portfolio-frontend-backoffice/service.yaml
-  - portfolio-mongodb
   - portfolio-ingress.yaml
-  - portfolio-rustfs/rustfs.yaml
+  # - portfolio-mongodb
+  # - portfolio-rustfs/rustfs.yaml
